@@ -30,11 +30,12 @@
 
                     string userGuess = GetUserGuess();
 
-                    var (correctPosition, wrongPosition) = EvaluateGuess(userGuess, secretCode);                    //get both variables out of one methodcall by making use of tuples
+                    var (correctPosition, wrongPosition, visualFeedback) = EvaluateGuess(userGuess, secretCode);                    //get both variables out of one methodcall by making use of tuples
 
 
                     Console.WriteLine($"{correctPosition} digit/s are correct and on the right position!");
                     Console.WriteLine($"{wrongPosition} digit/s are correct but on the wrong position!");
+                    Console.WriteLine($"Code: {visualFeedback}");
 
                     //winning, no tries left or keep playing
                     if (correctPosition == 4)                                                                       //check if 4/4 digits are guessed in the correct position
@@ -102,13 +103,19 @@
         }
 
 
-        static (int correctPosition, int wrongPosition) EvaluateGuess(string userGuess, string secretCode)
+        static (int correctPosition, int wrongPosition, string codeFeedback) EvaluateGuess(string userGuess, string secretCode)
         {
             int correctPosition = 0;
             int wrongPosition = 0;
 
             char[] secretArray = secretCode.ToCharArray();
             char[] guessArray = userGuess.ToCharArray();
+            char[] visualFeedback = new char[userGuess.Length];
+
+            for (int i = 0; i < 4; i++)
+            {
+                visualFeedback[i] = '*';
+            }
 
             for (int i = 0; i < secretCode.Length; i++)
             {
@@ -117,6 +124,7 @@
                     correctPosition++;
                     secretArray[i] = '*';
                     guessArray[i] = '#';
+                    visualFeedback[i] = userGuess[i];
                 }
             }
 
@@ -132,7 +140,8 @@
                     }
                 }
             }
-            return (correctPosition, wrongPosition);
+            string codeFeedback = new string(visualFeedback);
+            return (correctPosition, wrongPosition, codeFeedback);
         }
 
         static Random generator = new Random();
@@ -167,21 +176,20 @@
 
             //declaring the amount of guesses to a variable to handle it easier
             int intChoice = int.Parse(choice);
-            if (intChoice == 1)
+            int guessLimit = 0;
+            switch (intChoice)
             {
-                int guessLimit = 15;
-                return guessLimit;
+                case 1:
+                    guessLimit = 15;
+                    break;
+                case 2:
+                    guessLimit = 10;
+                    break;
+                case 3:
+                    guessLimit = 6;
+                    break;
             }
-            else if (intChoice == 2)
-            {
-                int guessLimit = 10;
-                return guessLimit;
-            }
-            else
-            {
-                int guessLimit = 6;
-                return guessLimit;
-            }
+            return guessLimit;
 
         }
     }
